@@ -47,7 +47,7 @@ yarn dev
 
 ## build the project
 ```bash
-yarn dev
+yarn build
 ```
 
 ## Technologies
