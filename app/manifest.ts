@@ -27,7 +27,7 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/png",
         purpose: "maskable",
       },
-    ],
+    ], 
     shortcuts: [
       {
         name: "Quick Search",
