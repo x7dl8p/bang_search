@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next"
 
+// Add this line to fix the static export error
+export const dynamic = "force-static"
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Universal Search - PWA Search Interface",
@@ -16,13 +19,13 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/icon-192x192.png",
         sizes: "192x192",
         type: "image/png",
-        purpose: "maskable any",
+        purpose: "maskable",
       },
       {
         src: "/icon-512x512.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "maskable any",
+        purpose: "maskable",
       },
     ],
     shortcuts: [
