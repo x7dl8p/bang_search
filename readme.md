@@ -27,30 +27,27 @@ The app comes with several built-in bang commands:
 | !gh  | GitHub        | !gh nextjs app |
 | !so  | Stack Overflow| !so javascript error |
 
-...and many more! 
-
-## Installation
-
-### As a PWA
-
-1. Visit the deployed app in Chrome, Edge, or any modern browser
-2. Look for the install icon in your address bar
-3. Click "Install" to add it to your device
+...and many more! For a comprehensive list of available bang commands, visit [DuckDuckGo Bangs](https://duckduckgo.com/bangs). Explore thousands of shortcuts to search your favorite websites directly.
 
 ### Local Development
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/pwa-search-interface.git
+git clone https://github.com/x7dl8p/bang_search.git
 
 # Navigate to the project
-cd pwa-search-interface
+cd bang_search
 
 # Install dependencies
-npm install
+yarn install
 
 # Run development server
-npm run dev
+yarn dev
+```
+
+## build the project
+```bash
+yarn dev
 ```
 
 ## Technologies
@@ -59,16 +56,6 @@ npm run dev
 - **TypeScript**: Type-safe code
 - **Tailwind CSS**: Utility-first CSS framework
 - **PWA**: Progressive Web App capabilities
-
-## Building for Production
-
-```bash
-# Build the project
-npm run build
-
-# Export as static site
-npm run export
-```
 
 ## Offline Support
 
@@ -93,15 +80,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 ## License
+This project is licensed under a proprietary license. All rights reserved. Unauthorized copying, distribution, or modification of this project, via any medium, is strictly prohibited without prior written permission from the author.
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Inspired by DuckDuckGo's bang commands
-- Built with Next.js and Tailwind CSS
-- Icons from Lucide React
+hahah joking, under MIT license.
 
 ---
 
-Made with ❤️ for the open web
+Made with ❤️ for the open web.
