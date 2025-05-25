@@ -1,6 +1,9 @@
 # Universal Search - Bang-enabled PWA Search Interface
 
 A Progressive Web App that brings the power of search engine bang shortcuts to your browser. Search multiple engines with simple commands and work offline with local storage.
+![{8A0820D5-DE34-4A1F-8449-19A581E15D6C}](https://github.com/user-attachments/assets/5900da90-a175-43df-bf90-355650fa2afa)
+![{D104533F-4CDB-49B6-9804-C05B6F12B8EF}](https://github.com/user-attachments/assets/8a33f54f-0bf9-4fe8-9665-c92c89c64acf)
+
 
 ## Features
 
