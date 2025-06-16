@@ -10,11 +10,10 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Universal Search - PWA Search Interface",
-  description: "A Progressive Web App search interface with DuckDuckGo bangs integration",
-  keywords: ["search", "pwa", "duckduckgo", "bangs", "offline"],
+  description: "A Progressive Web App search interface with bangs integration",
+  keywords: ["search", "pwa", "banger", "bangs", "search engine", "universal search", "offline search"],
   authors: [{ name: "Universal Search" }],
-  creator: "Universal Search",
-  publisher: "Universal Search",
+  creator: "Moahmmad !Ahmad",
   formatDetection: {
     email: false,
     address: false,
@@ -25,7 +24,6 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "UniSearch",
   },
-    generator: 'v0.dev'
 }
 
 export const viewport: Viewport = {
@@ -45,9 +43,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen`}>
-        <ThemeProvider defaultTheme="system" storageKey="universal-search-theme">
+    <html lang="en" suppressHydrationWarning className="dark">
+      <body className={`${inter.className} min-h-screen`} suppressHydrationWarning>
+        <ThemeProvider defaultTheme="dark" storageKey="universal-search-theme">
           {children}
           <PWAInstaller />
         </ThemeProvider>
