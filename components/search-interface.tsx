@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Search } from "lucide-react"
+import { Search, X } from "lucide-react" // Added X icon import
 import { BangChips } from "./bang-chips"
 import { SearchSuggestions } from "./search-suggestions"
 import { SearchHistory } from "./search-history"
@@ -148,10 +148,17 @@ export function SearchInterface() {
       if (bang) {
         return (
           <div className="relative">
-            <div className="absolute left-12 top-1/2 transform -translate-y-1/2 flex items-center gap-2 pointer-events-none z-10">
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-zinc-200 text-zinc-700 border border-zinc-300 dark:bg-zinc-700 dark:text-zinc-300 dark:border-zinc-600">
-                {bang.name}
-              </span>
+            <div className="absolute left-12 top-1/2 transform -translate-y-1/2 flex items-center gap-2 z-10">
+              <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-zinc-200 text-zinc-700 border border-zinc-300 dark:bg-zinc-700 dark:text-zinc-300 dark:border-zinc-600">
+                <span>{bang.name}</span>
+                <button
+                  onClick={() => setQuery("")}
+                  className="ml-1 rounded-full hover:bg-zinc-300 dark:hover:bg-zinc-600 flex items-center justify-center w-4 h-4"
+                  aria-label="Clear bang"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
             </div>
             <input
               ref={inputRef}
@@ -160,13 +167,17 @@ export function SearchInterface() {
               value={rest ? rest.replace(/^\s+/, "") : ""}
               onChange={(e) => {
                 const newValue = e.target.value
-                setQuery(`!${trigger} ${newValue}`)
+                if (newValue === "") {
+                  setQuery("") // Clear the entire query including the bang when field is empty
+                } else {
+                  setQuery(`!${trigger} ${newValue}`)
+                }
               }}
               onFocus={handleInputFocus}
               onKeyDown={handleKeyDown}
               placeholder="Enter search term..."
               className="w-full bg-white border border-zinc-300 rounded-xl px-4 py-3 text-zinc-900 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent transition-all duration-200 dark:bg-zinc-900 dark:border-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:ring-zinc-600 pl-12 pr-4 text-lg"
-              style={{ paddingLeft: `${80 + bang.name.length * 7}px` }}
+              style={{ paddingLeft: `${90 + bang.name.length * 8}px` }}
               autoComplete="off"
               spellCheck="false"
             />
@@ -184,7 +195,7 @@ export function SearchInterface() {
         onFocus={handleInputFocus}
         onKeyDown={handleKeyDown}
         placeholder="Search the web or use !bangs..."
-        className="w-full bg-white border border-zinc-300 rounded-xl px-4 py-3 text-zinc-900 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent transition-all duration-200 dark:bg-zinc-900 dark:border-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:ring-zinc-600 pl-12 pr-4 text-lg"
+        className="w-full bg-white border border-zinc-300 rounded-xl px-4 py-3 text-zinc-900 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent transition-all duration-200 dark:bg-zinc-900 dark:border-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:ring-zinc-600 pl-12 pr-4 text-lg placeholder:text-sm"
         autoComplete="off"
         spellCheck="false"
       />

@@ -11,32 +11,16 @@ export function useBangs() {
     loadBangs();
   }, []);
 
-  const loadBangs = async () => {
+  const loadBangs = () => { // Made synchronous, removed async
     try {
       setLoading(true);
-
-      // Try to load from localStorage first
-      const cachedBangs = localStorage.getItem("cached-bangs");
-      if (cachedBangs) {
-        try {
-          const parsed = JSON.parse(cachedBangs);
-          setBangs(transformBangs(parsed));
-        } catch (error) {
-          console.error("Failed to parse cached bangs:", error);
-        }
-      }
-
-      // Use embedded bangs data instead of fetching
+      // Directly use embedded bangs data
       const bangData: Bang[] = getEmbeddedBangs();
       const transformedBangs = transformBangs(bangData);
       setBangs(transformedBangs);
-
-      // Cache the bangs
-      localStorage.setItem("cached-bangs", JSON.stringify(bangData));
-      localStorage.setItem("bangs-last-updated", Date.now().toString());
     } catch (error) {
-      console.error("Failed to load bangs:", error);
-      // Fallback to default bangs if loading fails
+      console.error("Failed to load embedded bangs:", error);
+      // Fallback to default bangs if loading embedded fails (optional, could remove if getEmbeddedBangs is always reliable)
       setBangs(getDefaultBangs());
     } finally {
       setLoading(false);
