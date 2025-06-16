@@ -17,8 +17,8 @@ export default function HomePage() {
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-4xl">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-zinc-900 dark:text-white mb-2">Universal Search</h1>
-            <p className="text-zinc-600 dark:text-zinc-400">Search with bang shortcuts • Works offline</p>
+            <h1 className="text-4xl font-bold text-zinc-900 dark:text-white mb-2">Banger ;)</h1>
+            <p className="text-zinc-600 dark:text-zinc-400">Many less clicks, to your MF destination.</p>
           </div>
           <SearchInterface />
         </div>
