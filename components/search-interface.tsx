@@ -17,6 +17,7 @@ export function SearchInterface() {
   const [query, setQuery] = useState("")
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -42,6 +43,8 @@ export function SearchInterface() {
 
   useEffect(() => {
     debouncedFetchSuggestions(query)
+    // Reset selection when query changes
+    setSelectedSuggestionIndex(-1)
   }, [query, debouncedFetchSuggestions])
 
   // Handle clicks outside to close suggestions
@@ -50,6 +53,7 @@ export function SearchInterface() {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setShowSuggestions(false)
         setShowHistory(false)
+        setSelectedSuggestionIndex(-1)
       }
     }
 
@@ -62,6 +66,7 @@ export function SearchInterface() {
     setQuery(value)
     setShowSuggestions(true)
     setShowHistory(false)
+    setSelectedSuggestionIndex(-1)
   }
 
   const handleInputFocus = () => {
@@ -72,6 +77,7 @@ export function SearchInterface() {
       setShowSuggestions(true)
       setShowHistory(false)
     }
+    setSelectedSuggestionIndex(-1)
   }
 
   const handleBangClick = (bang: string) => {
@@ -79,6 +85,7 @@ export function SearchInterface() {
     inputRef.current?.focus()
     setShowSuggestions(true)
     setShowHistory(false)
+    setSelectedSuggestionIndex(-1)
   }
 
   const handleSearch = (searchQuery?: string) => {
@@ -98,6 +105,7 @@ export function SearchInterface() {
         setQuery("")
         setShowSuggestions(false)
         setShowHistory(false)
+        setSelectedSuggestionIndex(-1)
         return
       }
     }
@@ -108,11 +116,30 @@ export function SearchInterface() {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch()
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      if (showSuggestions && suggestions.length > 0) {
+        setSelectedSuggestionIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        )
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      if (showSuggestions && suggestions.length > 0) {
+        setSelectedSuggestionIndex(prev => 
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        )
+      }
+    } else if (e.key === "Enter") {
+      if (selectedSuggestionIndex >= 0 && suggestions[selectedSuggestionIndex]) {
+        handleSearch(suggestions[selectedSuggestionIndex])
+      } else {
+        handleSearch()
+      }
     } else if (e.key === "Escape") {
       setShowSuggestions(false)
       setShowHistory(false)
+      setSelectedSuggestionIndex(-1)
     }
   }
 
@@ -229,7 +256,13 @@ export function SearchInterface() {
             {/* Search Suggestions - Below bangs */}
             {showSearchSuggestions && (
               <div className="flex-1 overflow-y-auto">
-                <SearchSuggestions suggestions={suggestions} loading={loading} onSelect={handleSearch} query={query} />
+                <SearchSuggestions 
+                  suggestions={suggestions} 
+                  loading={loading} 
+                  onSelect={handleSearch} 
+                  query={query}
+                  selectedIndex={selectedSuggestionIndex} 
+                />
               </div>
             )}
 

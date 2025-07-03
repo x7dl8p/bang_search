@@ -7,9 +7,10 @@ interface SearchSuggestionsProps {
   loading: boolean
   onSelect: (suggestion: string) => void
   query: string
+  selectedIndex?: number
 }
 
-export function SearchSuggestions({ suggestions, loading, onSelect, query }: SearchSuggestionsProps) {
+export function SearchSuggestions({ suggestions, loading, onSelect, query, selectedIndex = -1 }: SearchSuggestionsProps) {
   if (loading) {
     return (
       <div className="p-4 flex items-center justify-center">
@@ -32,7 +33,11 @@ export function SearchSuggestions({ suggestions, loading, onSelect, query }: Sea
         <div
           key={index}
           onClick={() => onSelect(suggestion)}
-          className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer transition-colors duration-150 flex items-center gap-3"
+          className={`px-4 py-2 cursor-pointer transition-colors duration-150 flex items-center gap-3 ${
+            index === selectedIndex
+              ? 'bg-zinc-100 dark:bg-zinc-800'
+              : 'hover:bg-zinc-50 dark:hover:bg-zinc-800'
+          }`}
         >
           <Search className="w-4 h-4 text-zinc-400 dark:text-zinc-400" />
           <span className="text-sm text-zinc-900 dark:text-zinc-100">{suggestion}</span>
