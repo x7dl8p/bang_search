@@ -3,7 +3,6 @@ const nextConfig = {
   // Enable static exports for PWA
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
-  distDir: 'dist',
   
   eslint: {
     ignoreDuringBuilds: true,
