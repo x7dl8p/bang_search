@@ -18,6 +18,7 @@ export function SearchInterface() {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
+  const [selectedHistoryIndex, setSelectedHistoryIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -43,9 +44,15 @@ export function SearchInterface() {
 
   useEffect(() => {
     debouncedFetchSuggestions(query)
-    // Reset selection when query changes
+    // Reset selections when query changes
     setSelectedSuggestionIndex(-1)
+    setSelectedHistoryIndex(-1)
   }, [query, debouncedFetchSuggestions])
+
+  // Focus input on component mount
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
 
   // Handle clicks outside to close suggestions
   useEffect(() => {
@@ -54,6 +61,7 @@ export function SearchInterface() {
         setShowSuggestions(false)
         setShowHistory(false)
         setSelectedSuggestionIndex(-1)
+        setSelectedHistoryIndex(-1)
       }
     }
 
@@ -67,6 +75,7 @@ export function SearchInterface() {
     setShowSuggestions(true)
     setShowHistory(false)
     setSelectedSuggestionIndex(-1)
+    setSelectedHistoryIndex(-1)
   }
 
   const handleInputFocus = () => {
@@ -78,14 +87,19 @@ export function SearchInterface() {
       setShowHistory(false)
     }
     setSelectedSuggestionIndex(-1)
+    setSelectedHistoryIndex(-1)
   }
 
   const handleBangClick = (bang: string) => {
     setQuery(bang + " ")
-    inputRef.current?.focus()
     setShowSuggestions(true)
     setShowHistory(false)
     setSelectedSuggestionIndex(-1)
+    setSelectedHistoryIndex(-1)
+    // Focus the input after bang selection
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 0)
   }
 
   const handleSearch = (searchQuery?: string) => {
@@ -106,6 +120,7 @@ export function SearchInterface() {
         setShowSuggestions(false)
         setShowHistory(false)
         setSelectedSuggestionIndex(-1)
+        setSelectedHistoryIndex(-1)
         return
       }
     }
@@ -122,6 +137,12 @@ export function SearchInterface() {
         setSelectedSuggestionIndex(prev => 
           prev < suggestions.length - 1 ? prev + 1 : 0
         )
+        setSelectedHistoryIndex(-1) // Reset history selection
+      } else if (showHistory && history.length > 0) {
+        setSelectedHistoryIndex(prev => 
+          prev < Math.min(history.length - 1, 9) ? prev + 1 : 0 // Max 10 history items
+        )
+        setSelectedSuggestionIndex(-1) // Reset suggestions selection
       }
     } else if (e.key === "ArrowUp") {
       e.preventDefault()
@@ -129,10 +150,27 @@ export function SearchInterface() {
         setSelectedSuggestionIndex(prev => 
           prev > 0 ? prev - 1 : suggestions.length - 1
         )
+        setSelectedHistoryIndex(-1) // Reset history selection
+      } else if (showHistory && history.length > 0) {
+        const maxHistoryIndex = Math.min(history.length - 1, 9) // Max 10 history items
+        setSelectedHistoryIndex(prev => 
+          prev > 0 ? prev - 1 : maxHistoryIndex
+        )
+        setSelectedSuggestionIndex(-1) // Reset suggestions selection
       }
     } else if (e.key === "Enter") {
       if (selectedSuggestionIndex >= 0 && suggestions[selectedSuggestionIndex]) {
         handleSearch(suggestions[selectedSuggestionIndex])
+      } else if (selectedHistoryIndex >= 0 && history[selectedHistoryIndex]) {
+        setQuery(history[selectedHistoryIndex])
+        setShowHistory(false)
+        setShowSuggestions(true)
+        setSelectedHistoryIndex(-1)
+        setSelectedSuggestionIndex(-1)
+        // Keep focus on input
+        setTimeout(() => {
+          inputRef.current?.focus()
+        }, 0)
       } else {
         handleSearch()
       }
@@ -140,6 +178,7 @@ export function SearchInterface() {
       setShowSuggestions(false)
       setShowHistory(false)
       setSelectedSuggestionIndex(-1)
+      setSelectedHistoryIndex(-1)
     }
   }
 
@@ -213,11 +252,6 @@ export function SearchInterface() {
       }
     }
 
-    useEffect(() => {
-      inputRef.current?.focus();
-    }, []);
-
-
     return (
       <input
         ref={inputRef}
@@ -275,9 +309,16 @@ export function SearchInterface() {
                     setQuery(item)
                     setShowHistory(false)
                     setShowSuggestions(true)
+                    setSelectedHistoryIndex(-1)
+                    setSelectedSuggestionIndex(-1)
+                    // Keep focus on input
+                    setTimeout(() => {
+                      inputRef.current?.focus()
+                    }, 0)
                   }}
                   onSearch={handleSearch}
                   onClear={clearHistory}
+                  selectedIndex={selectedHistoryIndex}
                 />
               </div>
             )}
