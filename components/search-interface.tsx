@@ -186,6 +186,11 @@ export function SearchInterface() {
       }
     }
 
+    useEffect(() => {
+      inputRef.current?.focus();
+    }, []);
+
+
     return (
       <input
         ref={inputRef}
