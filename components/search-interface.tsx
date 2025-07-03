@@ -17,6 +17,8 @@ export function SearchInterface() {
   const [query, setQuery] = useState("")
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
+  const [selectedHistoryIndex, setSelectedHistoryIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -42,7 +44,15 @@ export function SearchInterface() {
 
   useEffect(() => {
     debouncedFetchSuggestions(query)
+    // Reset selections when query changes
+    setSelectedSuggestionIndex(-1)
+    setSelectedHistoryIndex(-1)
   }, [query, debouncedFetchSuggestions])
+
+  // Focus input on component mount
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
 
   // Handle clicks outside to close suggestions
   useEffect(() => {
@@ -50,6 +60,8 @@ export function SearchInterface() {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setShowSuggestions(false)
         setShowHistory(false)
+        setSelectedSuggestionIndex(-1)
+        setSelectedHistoryIndex(-1)
       }
     }
 
@@ -62,6 +74,8 @@ export function SearchInterface() {
     setQuery(value)
     setShowSuggestions(true)
     setShowHistory(false)
+    setSelectedSuggestionIndex(-1)
+    setSelectedHistoryIndex(-1)
   }
 
   const handleInputFocus = () => {
@@ -72,13 +86,20 @@ export function SearchInterface() {
       setShowSuggestions(true)
       setShowHistory(false)
     }
+    setSelectedSuggestionIndex(-1)
+    setSelectedHistoryIndex(-1)
   }
 
   const handleBangClick = (bang: string) => {
     setQuery(bang + " ")
-    inputRef.current?.focus()
     setShowSuggestions(true)
     setShowHistory(false)
+    setSelectedSuggestionIndex(-1)
+    setSelectedHistoryIndex(-1)
+    // Focus the input after bang selection
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 0)
   }
 
   const handleSearch = (searchQuery?: string) => {
@@ -98,6 +119,8 @@ export function SearchInterface() {
         setQuery("")
         setShowSuggestions(false)
         setShowHistory(false)
+        setSelectedSuggestionIndex(-1)
+        setSelectedHistoryIndex(-1)
         return
       }
     }
@@ -108,11 +131,71 @@ export function SearchInterface() {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch()
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      if (showSuggestions && suggestions.length > 0) {
+        setSelectedSuggestionIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        )
+        setSelectedHistoryIndex(-1) // Reset history selection
+      } else if (showHistory && history.length > 0) {
+        setSelectedHistoryIndex(prev => 
+          prev < Math.min(history.length - 1, 9) ? prev + 1 : 0 // Max 10 history items
+        )
+        setSelectedSuggestionIndex(-1) // Reset suggestions selection
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      if (showSuggestions && suggestions.length > 0) {
+        setSelectedSuggestionIndex(prev => 
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        )
+        setSelectedHistoryIndex(-1) // Reset history selection
+      } else if (showHistory && history.length > 0) {
+        const maxHistoryIndex = Math.min(history.length - 1, 9) // Max 10 history items
+        setSelectedHistoryIndex(prev => 
+          prev > 0 ? prev - 1 : maxHistoryIndex
+        )
+        setSelectedSuggestionIndex(-1) // Reset suggestions selection
+      }
+    } else if (e.key === "Enter") {
+      if (selectedSuggestionIndex >= 0 && suggestions[selectedSuggestionIndex]) {
+        // Check if we have a bang selected
+        const bangMatch = query.match(/^!(\w+)(\s+.*)?$/)
+        if (bangMatch) {
+          const [, trigger] = bangMatch
+          // Set the suggestion in the input field, don't search yet
+          setQuery(`!${trigger} ${suggestions[selectedSuggestionIndex]}`)
+          setShowSuggestions(false)
+          setShowHistory(false)
+          setSelectedSuggestionIndex(-1)
+          setSelectedHistoryIndex(-1)
+          // Keep focus on input
+          setTimeout(() => {
+            inputRef.current?.focus()
+          }, 0)
+        } else {
+          // No bang selected, search the suggestion immediately
+          handleSearch(suggestions[selectedSuggestionIndex])
+        }
+      } else if (selectedHistoryIndex >= 0 && history[selectedHistoryIndex]) {
+        setQuery(history[selectedHistoryIndex])
+        setShowHistory(false)
+        setShowSuggestions(true)
+        setSelectedHistoryIndex(-1)
+        setSelectedSuggestionIndex(-1)
+        // Keep focus on input
+        setTimeout(() => {
+          inputRef.current?.focus()
+        }, 0)
+      } else {
+        handleSearch()
+      }
     } else if (e.key === "Escape") {
       setShowSuggestions(false)
       setShowHistory(false)
+      setSelectedSuggestionIndex(-1)
+      setSelectedHistoryIndex(-1)
     }
   }
 
@@ -167,11 +250,7 @@ export function SearchInterface() {
               value={rest ? rest.replace(/^\s+/, "") : ""}
               onChange={(e) => {
                 const newValue = e.target.value
-                if (newValue === "") {
-                  setQuery("") // Clear the entire query including the bang when field is empty
-                } else {
-                  setQuery(`!${trigger} ${newValue}`)
-                }
+                setQuery(`!${trigger} ${newValue}`)
               }}
               onFocus={handleInputFocus}
               onKeyDown={handleKeyDown}
@@ -224,7 +303,32 @@ export function SearchInterface() {
             {/* Search Suggestions - Below bangs */}
             {showSearchSuggestions && (
               <div className="flex-1 overflow-y-auto">
-                <SearchSuggestions suggestions={suggestions} loading={loading} onSelect={handleSearch} query={query} />
+                <SearchSuggestions 
+                  suggestions={suggestions} 
+                  loading={loading} 
+                  onSelect={(suggestion) => {
+                    // Check if we have a bang selected
+                    const bangMatch = query.match(/^!(\w+)(\s+.*)?$/)
+                    if (bangMatch) {
+                      const [, trigger] = bangMatch
+                      // Set the suggestion in the input field, don't search yet
+                      setQuery(`!${trigger} ${suggestion}`)
+                      setShowSuggestions(false)
+                      setShowHistory(false)
+                      setSelectedSuggestionIndex(-1)
+                      setSelectedHistoryIndex(-1)
+                      // Keep focus on input
+                      setTimeout(() => {
+                        inputRef.current?.focus()
+                      }, 0)
+                    } else {
+                      // No bang selected, search the suggestion immediately
+                      handleSearch(suggestion)
+                    }
+                  }} 
+                  query={query}
+                  selectedIndex={selectedSuggestionIndex} 
+                />
               </div>
             )}
 
@@ -237,9 +341,16 @@ export function SearchInterface() {
                     setQuery(item)
                     setShowHistory(false)
                     setShowSuggestions(true)
+                    setSelectedHistoryIndex(-1)
+                    setSelectedSuggestionIndex(-1)
+                    // Keep focus on input
+                    setTimeout(() => {
+                      inputRef.current?.focus()
+                    }, 0)
                   }}
                   onSearch={handleSearch}
                   onClear={clearHistory}
+                  selectedIndex={selectedHistoryIndex}
                 />
               </div>
             )}

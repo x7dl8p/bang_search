@@ -19,7 +19,7 @@ export function BangSuggestions({ bangs, onSelect, query }: BangSuggestionsProps
       </div>
 
       <div className="overflow-y-auto h-full">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 m-1">
           {bangs.map((bang) => (
             <button
               key={bang.trigger}

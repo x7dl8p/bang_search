@@ -7,9 +7,10 @@ interface SearchHistoryProps {
   onSelect: (item: string) => void
   onSearch: (query: string) => void
   onClear: () => void
+  selectedIndex?: number
 }
 
-export function SearchHistory({ history, onSelect, onSearch, onClear }: SearchHistoryProps) {
+export function SearchHistory({ history, onSelect, onSearch, onClear, selectedIndex = -1 }: SearchHistoryProps) {
   if (history.length === 0) {
     return <div className="p-4 text-center text-zinc-400 dark:text-zinc-500 text-sm">No search history yet</div>
   }
@@ -32,7 +33,11 @@ export function SearchHistory({ history, onSelect, onSearch, onClear }: SearchHi
       {history.slice(0, 10).map((item, index) => (
         <div
           key={index}
-          className="px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer transition-colors duration-150 flex items-center gap-3 group"
+          className={`px-4 py-2 cursor-pointer transition-colors duration-150 flex items-center gap-3 group ${
+            index === selectedIndex
+              ? 'bg-zinc-100 dark:bg-zinc-800'
+              : 'hover:bg-zinc-50 dark:hover:bg-zinc-800'
+          }`}
         >
           <Clock className="w-4 h-4 text-zinc-400 dark:text-zinc-400" />
           <span
