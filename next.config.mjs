@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Enable static exports for PWA
-  output: 'export',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
   distDir: 'dist',
