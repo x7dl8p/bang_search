@@ -160,7 +160,24 @@ export function SearchInterface() {
       }
     } else if (e.key === "Enter") {
       if (selectedSuggestionIndex >= 0 && suggestions[selectedSuggestionIndex]) {
-        handleSearch(suggestions[selectedSuggestionIndex])
+        // Check if we have a bang selected
+        const bangMatch = query.match(/^!(\w+)(\s+.*)?$/)
+        if (bangMatch) {
+          const [, trigger] = bangMatch
+          // Set the suggestion in the input field, don't search yet
+          setQuery(`!${trigger} ${suggestions[selectedSuggestionIndex]}`)
+          setShowSuggestions(false)
+          setShowHistory(false)
+          setSelectedSuggestionIndex(-1)
+          setSelectedHistoryIndex(-1)
+          // Keep focus on input
+          setTimeout(() => {
+            inputRef.current?.focus()
+          }, 0)
+        } else {
+          // No bang selected, search the suggestion immediately
+          handleSearch(suggestions[selectedSuggestionIndex])
+        }
       } else if (selectedHistoryIndex >= 0 && history[selectedHistoryIndex]) {
         setQuery(history[selectedHistoryIndex])
         setShowHistory(false)
@@ -233,11 +250,7 @@ export function SearchInterface() {
               value={rest ? rest.replace(/^\s+/, "") : ""}
               onChange={(e) => {
                 const newValue = e.target.value
-                if (newValue === "") {
-                  setQuery("") // Clear the entire query including the bang when field is empty
-                } else {
-                  setQuery(`!${trigger} ${newValue}`)
-                }
+                setQuery(`!${trigger} ${newValue}`)
               }}
               onFocus={handleInputFocus}
               onKeyDown={handleKeyDown}
@@ -293,7 +306,26 @@ export function SearchInterface() {
                 <SearchSuggestions 
                   suggestions={suggestions} 
                   loading={loading} 
-                  onSelect={handleSearch} 
+                  onSelect={(suggestion) => {
+                    // Check if we have a bang selected
+                    const bangMatch = query.match(/^!(\w+)(\s+.*)?$/)
+                    if (bangMatch) {
+                      const [, trigger] = bangMatch
+                      // Set the suggestion in the input field, don't search yet
+                      setQuery(`!${trigger} ${suggestion}`)
+                      setShowSuggestions(false)
+                      setShowHistory(false)
+                      setSelectedSuggestionIndex(-1)
+                      setSelectedHistoryIndex(-1)
+                      // Keep focus on input
+                      setTimeout(() => {
+                        inputRef.current?.focus()
+                      }, 0)
+                    } else {
+                      // No bang selected, search the suggestion immediately
+                      handleSearch(suggestion)
+                    }
+                  }} 
                   query={query}
                   selectedIndex={selectedSuggestionIndex} 
                 />
