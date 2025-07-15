@@ -1,6 +1,8 @@
 import { SearchInterface } from "@/components/search-interface"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { IPLocation } from "@/components/ip-location"
+import { ClipboardSendToTelegram } from "@/components/clipboard-send-tg"
+
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -12,7 +14,10 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-white dark:bg-black flex flex-col transition-colors">
       <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
+        <div className="flex-col items-end space-x-2">
         <ThemeToggle />
+        <ClipboardSendToTelegram />
+        </div>
         <IPLocation />
       </div>
 
