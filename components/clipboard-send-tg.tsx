@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Send, CheckCircle2, XCircle } from "lucide-react"
+import { CornerRightUp , CheckCircle2, XCircle, BotMessageSquare  } from "lucide-react"
 
 const TG_BOT_TOKEN = process.env.NEXT_PUBLIC_TG_BOT_TOKEN
 const TG_CHAT_ID = process.env.NEXT_PUBLIC_TG_CHAT_ID
@@ -51,14 +51,14 @@ export function ClipboardSendToTelegram() {
   return (
     <button
       onClick={handleSend}
-      className="inline-flex items-center justify-center p-2 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-700 transition-colors"
+      className="inline-flex items-center justify-center rounded-full w-10 h-10 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors"
       aria-label="Send clipboard to Telegram"
       disabled={status === "sending"}
       title="Send clipboard to Telegram"
     >
-      {status === "idle" && <Send className="w-5 h-5 size-sm" />}
-      {status === "sending" && <Send className="w-5 h-5 animate-pulse" />}
-      {status === "success" && <CheckCircle2 className="w-5 h-5 text-green-400 animate-bounce" />}
+      {status === "idle" && <BotMessageSquare  className="w-5 h-5 size-sm" />}
+      {status === "sending" && <CornerRightUp  className="w-5 h-5 animate-pulse" />}
+      {status === "success" && <CheckCircle2 className="w-5 h-5 text-green-400 animate-pulse" />}
       {status === "error" && <XCircle className="w-5 h-5 text-red-400 animate-bounce" />}
     </button>
   )
